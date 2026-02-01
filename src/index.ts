@@ -1,26 +1,14 @@
-/**
- * Welcome to Cloudflare Workers! This is your first worker.
- *
- * - Run `npm run dev` in your terminal to start a development server
- * - Open a browser tab at http://localhost:8787/ to see your worker in action
- * - Run `npm run deploy` to publish your worker
- *
- * Bind resources to your worker in `wrangler.jsonc`. After adding bindings, a type definition for the
- * `Env` object can be regenerated with `npm run cf-typegen`.
- *
- * Learn more at https://developers.cloudflare.com/workers/
- */
+import { handlerMapper } from './mapper.js';
 
 export default {
-	async fetch(request, env, ctx): Promise<Response> {
+	async fetch(request, env) {
 		const url = new URL(request.url);
-		switch (url.pathname) {
-			case '/message':
-				return new Response('Hello, World!');
-			case '/random':
-				return new Response(crypto.randomUUID());
-			default:
-				return new Response('Not Found', { status: 404 });
+		const handler = handlerMapper[url.pathname];
+		console.log("SUPABASE_URL:", env.SUPABASE_URL);
+		console.log("SUPABASE_ANON_KEY:", env.SUPABASE_ANON_KEY ? "EXISTS" : "MISSING");
+		if (handler) {
+			return await handler.handle(request.method, request, env);
 		}
-	},
-} satisfies ExportedHandler<Env>;
+		return new Response("Not Found", { status: 404 });
+	}
+};
