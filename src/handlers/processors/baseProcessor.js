@@ -1,3 +1,5 @@
+import { createClient } from '@supabase/supabase-js';
+
 export class BaseProcessor {
 	jsonResponse(data, status = 200) {
 		return new Response(JSON.stringify(data), {
@@ -7,6 +9,10 @@ export class BaseProcessor {
 				"Access-Control-Allow-Origin": "*"
 			}
 		});
+	}
+
+	getSupabase(env) {
+		return createClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY);
 	}
 
 	errorResponse(message, status = 500) {

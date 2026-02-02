@@ -3,22 +3,17 @@ import { BaseProcessor } from './baseProcessor.js';
 export class CategoryGetProcessor extends BaseProcessor {
 	async process(request, env) {
 		try {
-			const url = `${env.SUPABASE_URL}/rest/v1/categories?select=id,name&order=name.asc`;
-			const response = await fetch(url, {
-				headers: {
-					"apikey": env.SUPABASE_ANON_KEY,
-					"Authorization": `Bearer ${env.SUPABASE_ANON_KEY}`
-				}
-			});
+			const supabase = this.getSupabase(env);
+			const { data, error } = await supabase.from('categories')
+				.select('id, name')
+				.order('name', { ascending: true });
 
-			if (!response.ok) {
+			if (error) {
+				console.error(error)
 				throw new Error("카테고리 정보를 불러올 수 없습니다.");
 			}
 
-			const data = await response.json();
-			const categories = data.map(item => ({ id: item.id, name: item.name }));
-
-			return this.jsonResponse(categories);
+			return this.jsonResponse(data);
 		} catch (e) {
 			return this.errorResponse(e.message);
 		}
