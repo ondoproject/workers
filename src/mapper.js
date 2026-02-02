@@ -5,6 +5,6 @@ const storeHandler = new StoreHandler();
 const categoryHandler = new CategoryHandler();
 
 export const handlerMapper = {
-	"/v1/store": storeHandler,
+	"/v1/stores": storeHandler,
 	"/v1/categories": categoryHandler
 };

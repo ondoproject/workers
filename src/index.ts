@@ -4,10 +4,16 @@ export default {
 	async fetch(request, env) {
 		const url = new URL(request.url);
 		const handler = handlerMapper[url.pathname];
-		console.log("SUPABASE_URL:", env.SUPABASE_URL);
-		console.log("SUPABASE_ANON_KEY:", env.SUPABASE_ANON_KEY ? "EXISTS" : "MISSING");
+
 		if (handler) {
-			return await handler.handle(request.method, request, env);
+			try {
+				return await handler.handle(request.method, request, env);
+			} catch (e) {
+				return new Response(JSON.stringify({ error: "Internal Server Error" }), {
+					status: 500,
+					headers: { "Content-Type": "application/json" }
+				});
+			}
 		}
 		return new Response("Not Found", { status: 404 });
 	}

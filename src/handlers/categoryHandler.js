@@ -1,11 +1,13 @@
 import { BaseHandler } from './baseHandler.js';
-import { categoryGetProcessor } from './processors/categoryGetProcessor.js';
+import { CategoryGetProcessor } from './processors/categoryGetProcessor.js';
 
 export class CategoryHandler extends BaseHandler {
+	#categoryGetProcessor = new CategoryGetProcessor();
+
 	constructor() {
 		super();
 		this.processors = {
-			"GET": categoryGetProcessor.process,
+			"GET": this.#categoryGetProcessor.process.bind(this.#categoryGetProcessor),
 		};
 	}
 }
