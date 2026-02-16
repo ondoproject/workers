@@ -1,7 +1,7 @@
-// categoryGetProcessor.js
-import { BaseProcessor } from '../baseProcessor.js';
+// CategoryController.js
+import { BaseController } from './BaseController.js';
 
-export class CategoryGetProcessor extends BaseProcessor {
+export class CategoryController extends BaseController {
 	async process(request, env) {
 		try {
 			const supabase = this.getSupabase(env);

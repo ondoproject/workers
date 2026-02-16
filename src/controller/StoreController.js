@@ -1,7 +1,7 @@
-// storeGetProcessor.js
-import { BaseProcessor } from '../baseProcessor.js';
+// StoreController.js
+import { BaseController } from './BaseController.js';
 
-export class StoreGetProcessor extends BaseProcessor {
+export class StoreController extends BaseController {
 	async process(request, env) {
 		try {
 			const supabase = this.getSupabase(env);

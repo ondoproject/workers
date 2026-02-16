@@ -1,13 +1,13 @@
 // mapper.js
 import { RequestHandler } from './handlers/requestHandler.js';
-import { StoreGetProcessor } from './handlers/processors/store/storeGetProcessor.js';
-import { CategoryGetProcessor } from './handlers/processors/category/categoryGetProcessor.js';
+import { StoreController } from './controller/StoreController.js';
+import { CategoryController } from './controller/CategoryController.js';
 
 export const handlerMapper = {
 	"/v1/stores": new RequestHandler({
-		"GET": new StoreGetProcessor(),
+		"GET": new StoreController(),
 	}),
 	"/v1/categories": new RequestHandler({
-		"GET": new CategoryGetProcessor()
+		"GET": new CategoryController()
 	})
 };

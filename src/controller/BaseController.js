@@ -1,7 +1,7 @@
-// baseProcessor.js
+// BaseController.js
 import { createClient } from '@supabase/supabase-js';
 
-export class BaseProcessor {
+export class BaseController {
 	jsonResponse(data, status = 200) {
 		return new Response(JSON.stringify(data), {
 			status,
