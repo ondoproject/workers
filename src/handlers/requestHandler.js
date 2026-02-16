@@ -8,10 +8,10 @@ export class RequestHandler {
 		}
 	}
 
-	async handle(method, request, env) {
-		const processor = this.#processors[method.toUpperCase()];
+	async handle(request, env) {
+		const processor = this.#processors[request.method.toUpperCase()];
 		if (!processor) {
-			return new Response(`Method ${method} Not Allowed`, { status: 405 });
+			return new Response(`Method ${request.method} Not Allowed`, { status: 405 });
 		}
 		return await processor.process(request, env);
 	}
