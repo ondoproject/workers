@@ -1,4 +1,5 @@
-// requestHandler.js
+import { AppError } from '../exception/appError.js';
+
 export class RequestHandler {
 	#processors = {};
 
@@ -9,10 +10,12 @@ export class RequestHandler {
 	}
 
 	async handle(request, env) {
-		const processor = this.#processors[request.method.toUpperCase()];
+		const method = request.method.toUpperCase();
+		const processor = this.#processors[method];
 		if (!processor) {
-			return new Response(`Method ${request.method} Not Allowed`, { status: 405 });
+			throw new AppError(`Method ${method} Not Allowed`, 405);
 		}
+
 		return await processor.process(request, env);
 	}
 }

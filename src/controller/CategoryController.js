@@ -10,11 +10,6 @@ export class CategoryController extends BaseController {
 	}
 
 	async process(request, env) {
-		try {
-			const data = await this.#categoryRepository.findAll();
-			return this.jsonResponse(data);
-		} catch (e) {
-			return this.errorResponse(e.message);
-		}
+		return await this.#categoryRepository.findAll();
 	}
 }
