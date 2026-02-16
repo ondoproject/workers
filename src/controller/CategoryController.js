@@ -9,7 +9,7 @@ export class CategoryController extends BaseController {
 		this.#categoryRepository = categoryRepository;
 	}
 
-	async process(request, env) {
+	async process(request) {
 		return await this.#categoryRepository.findAll();
 	}
 }

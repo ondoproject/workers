@@ -1,7 +1,9 @@
 // index.ts (dispatcher Servlet)
 import { HandlerMapping } from './handlers/handlerMapping.js';
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js';
 import { AppError } from './exception/appError.js';
+import { RequestHandler } from './handlers/requestHandler';
+import { storageClient } from './infrastructure/storageClient.js';
 
 interface Env {
 	SUPABASE_URL: string;
@@ -10,33 +12,36 @@ interface Env {
 	CDN_PREFIX: string;
 }
 
-type DatabaseClient = SupabaseClient;
-
 export default {
 	async fetch(request: Request, env: Env) {
-		const client = createClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY);
+		this.initialize(env);
 		const origin = request.headers.get("Origin");
 
 		try {
 			this.checkCors(origin, env);
 			if (request.method === "OPTIONS") {
-				return this.handleSuccess(null, request, env);
+				return this.handleSuccess(null, request);
 			}
 
-			const result = await this.dispatch(request, env, client);
-			return this.handleSuccess(result, request, env);
+			const handler = this.resolveHandler(request, env);
+			const result = await this.dispatch(request, handler);
+			return this.handleSuccess(result, request);
 		} catch (e) {
-			return this.handleError(e, request, env);
+			const error = e instanceof Error ? e : new Error(String(e));
+			return this.handleError(error, request);
 		}
 	},
 
-	async dispatch(request: Request, env: Env, client: DatabaseClient) {
-		const handler = this.resolveHandler(request, client);
+	async dispatch(request: Request, handler: RequestHandler) {
 		if (!handler) {
 			throw new AppError("요청하신 페이지를 찾을 수 없습니다.", 404);
 		}
+		return await handler.handle(request);
+	},
 
-		return await handler.handle(request, env);
+	initialize(env: Env) {
+		console.log(env.CDN_PREFIX);
+		storageClient.init(env.CDN_PREFIX);
 	},
 
 	checkCors(origin: string | null, env: Env) {
@@ -52,23 +57,24 @@ export default {
 		}
 	},
 
-	resolveHandler(request: Request, client: DatabaseClient) {
+	resolveHandler(request: Request, env: Env) {
+		const client = createClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY);
 		const url = new URL(request.url);
 		return new HandlerMapping(client).getHandler(url.pathname);
 	},
 
-	handleSuccess(data: any, request: Request, env: Env) {
+	handleSuccess(data: any, request: Request) {
 		const status = data === null ? 204 : 200;
-		return this.buildResponse(data, status, request, env);
+		return this.buildResponse(data, status, request);
 	},
 
-	handleError(e: Error, request: Request, env: Env) {
+	handleError(e: Error, request: Request) {
 		const status = e instanceof AppError ? e.status : 500;
 		const message = e.message || "Internal Server Error";
-		return this.buildResponse({ error: message }, status, request, env);
+		return this.buildResponse({ error: message }, status, request);
 	},
 
-	buildResponse(body: any, status: number, request: Request, env: Env) {
+	buildResponse(body: any, status: number, request: Request) {
 		const origin: string | null = request.headers.get("Origin");
 		const headers: Record<string, string> = {
 			"Content-Type": "application/json;charset=UTF-8",

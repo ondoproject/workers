@@ -1,5 +1,6 @@
 // StoreController.js
 import { BaseController } from './BaseController.js';
+import { storageClient } from '../infrastructure/storageClient.js';
 
 export class StoreController extends BaseController {
 	#storeRepository;
@@ -9,7 +10,7 @@ export class StoreController extends BaseController {
 		this.#storeRepository = storeRepository;
 	}
 
-	async process(request, env) {
+	async process(request) {
 		const data = await this.#storeRepository.findAll();
 		return data.map(item => ({
 			sid: item.sid,
@@ -18,7 +19,7 @@ export class StoreController extends BaseController {
 			description: item.description,
 			latitude: item.latitude,
 			longitude: item.longitude,
-			thumbnailUri: item.thumbnail_key ? `${env.CDN_PREFIX}${item.thumbnail_key}` : null,
+			thumbnailUri: item.thumbnail_key ? `${storageClient.getFullUri(item.thumbnail_key)}` : null,
 			categories: item.store_categories?.map(sc => sc.categories?.name) || []
 		}));
 	}

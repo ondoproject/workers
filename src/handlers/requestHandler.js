@@ -9,13 +9,13 @@ export class RequestHandler {
 		}
 	}
 
-	async handle(request, env) {
+	async handle(request) {
 		const method = request.method.toUpperCase();
 		const processor = this.#processors[method];
 		if (!processor) {
 			throw new AppError(`Method ${method} Not Allowed`, 405);
 		}
 
-		return await processor.process(request, env);
+		return await processor.process(request);
 	}
 }
