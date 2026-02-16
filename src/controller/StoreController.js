@@ -1,14 +1,10 @@
 // StoreController.js
 import { BaseController } from './BaseController.js';
 import { storageClient } from '../infrastructure/storageClient.js';
+import { StoreRepository } from '../repository/StoreRepository';
 
 export class StoreController extends BaseController {
-	#storeRepository;
-
-	constructor(storeRepository) {
-		super();
-		this.#storeRepository = storeRepository;
-	}
+	#storeRepository = new StoreRepository();
 
 	async process(request) {
 		const data = await this.#storeRepository.findAll();

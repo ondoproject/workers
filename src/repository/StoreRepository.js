@@ -1,8 +1,8 @@
-import { BaseRepository } from './BaseRepository.js';
+import { dbConnector } from '../infrastructure/databaseConnector';
 
-export class StoreRepository extends BaseRepository {
+export class StoreRepository {
 	async findAll() {
-		const { data, error } = await this.db
+		const { data, error } = await dbConnector.getConnection()
 			.from('stores')
 			.select(`
         *,

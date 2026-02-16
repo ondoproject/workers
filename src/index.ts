@@ -1,9 +1,9 @@
 // index.ts (dispatcher Servlet)
 import { HandlerMapping } from './handlers/handlerMapping.js';
-import { createClient } from '@supabase/supabase-js';
 import { AppError } from './exception/appError.js';
 import { RequestHandler } from './handlers/requestHandler';
 import { storageClient } from './infrastructure/storageClient.js';
+import { dbConnector } from './infrastructure/databaseConnector';
 
 interface Env {
 	SUPABASE_URL: string;
@@ -40,8 +40,8 @@ export default {
 	},
 
 	initialize(env: Env) {
-		console.log(env.CDN_PREFIX);
 		storageClient.init(env.CDN_PREFIX);
+		dbConnector.init(env.SUPABASE_URL, env.SUPABASE_ANON_KEY);
 	},
 
 	checkCors(origin: string | null, env: Env) {
@@ -58,9 +58,8 @@ export default {
 	},
 
 	resolveHandler(request: Request, env: Env) {
-		const client = createClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY);
 		const url = new URL(request.url);
-		return new HandlerMapping(client).getHandler(url.pathname);
+		return new HandlerMapping().getHandler(url.pathname);
 	},
 
 	handleSuccess(data: any, request: Request) {

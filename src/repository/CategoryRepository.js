@@ -1,8 +1,8 @@
-import { BaseRepository } from './BaseRepository.js';
+import { dbConnector } from '../infrastructure/databaseConnector';
 
-export class CategoryRepository extends BaseRepository {
+export class CategoryRepository {
 	async findAll() {
-		const { data, error } = await this.db
+		const { data, error } = await dbConnector.getConnection()
 			.from('categories')
 			.select('id, name')
 			.order('name', { ascending: true });
