@@ -1,5 +1,5 @@
 // storeGetProcessor.js
-import { BaseProcessor } from './baseProcessor.js';
+import { BaseProcessor } from '../baseProcessor.js';
 
 export class StoreGetProcessor extends BaseProcessor {
 	async process(request, env) {

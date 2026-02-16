@@ -1,5 +1,5 @@
 // categoryGetProcessor.js
-import { BaseProcessor } from './baseProcessor.js';
+import { BaseProcessor } from '../baseProcessor.js';
 
 export class CategoryGetProcessor extends BaseProcessor {
 	async process(request, env) {
