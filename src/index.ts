@@ -1,3 +1,4 @@
+// index.js
 import { handlerMapper } from './mapper.js';
 
 export default {

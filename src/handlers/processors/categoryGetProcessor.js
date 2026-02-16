@@ -1,3 +1,4 @@
+// categoryGetProcessor.js
 import { BaseProcessor } from './baseProcessor.js';
 
 export class CategoryGetProcessor extends BaseProcessor {
