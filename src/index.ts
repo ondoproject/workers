@@ -1,7 +1,6 @@
 // index.ts (dispatcher Servlet)
 import { HandlerMapping } from './handlers/handlerMapping.js';
 import { AppError } from './exception/appError.js';
-import { RequestHandler } from './handlers/requestHandler';
 import { storageClient } from './infrastructure/storageClient.js';
 import { dbConnector } from './infrastructure/databaseConnector';
 
@@ -23,7 +22,7 @@ export default {
 				return this.handleSuccess(null, request);
 			}
 
-			const handler = this.resolveHandler(request, env);
+			const handler = this.resolveHandler(request);
 			const result = await this.dispatch(request, handler);
 			return this.handleSuccess(result, request);
 		} catch (e) {
@@ -32,11 +31,11 @@ export default {
 		}
 	},
 
-	async dispatch(request: Request, handler: RequestHandler) {
+	async dispatch(request: Request, handler: Function | null) {
 		if (!handler) {
 			throw new AppError("요청하신 페이지를 찾을 수 없습니다.", 404);
 		}
-		return await handler.handle(request);
+		return await handler(request);
 	},
 
 	initialize(env: Env) {
@@ -57,9 +56,9 @@ export default {
 		}
 	},
 
-	resolveHandler(request: Request, env: Env) {
+	resolveHandler(request: Request) {
 		const url = new URL(request.url);
-		return new HandlerMapping().getHandler(url.pathname);
+		return new HandlerMapping().getHandler(request.method, url.pathname);
 	},
 
 	handleSuccess(data: any, request: Request) {

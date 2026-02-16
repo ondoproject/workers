@@ -1,11 +1,12 @@
 // CategoryController.js
-import { BaseController } from './BaseController.js';
 import { CategoryRepository } from '../repository/CategoryRepository';
+import { Get } from '../decorator/apiDecorator';
 
-export class CategoryController extends BaseController {
+export class CategoryController {
 	#categoryRepository = new CategoryRepository();
 
-	async process(request) {
+	@Get("/v1/categories")
+	async getCategories(request: Request) {
 		return await this.#categoryRepository.findAll();
 	}
 }

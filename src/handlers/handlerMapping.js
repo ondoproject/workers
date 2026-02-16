@@ -1,19 +1,27 @@
-// handlerMapping.js (HandlerMapping 역할)
-import { RequestHandler } from './requestHandler.js';
-import { StoreController } from '../controller/StoreController.js';
-import { CategoryController } from '../controller/CategoryController.js';
+import { ROUTES_KEY } from '../decorator/apiDecorator';
+import { CategoryController } from '../controller/CategoryController';
+import { StoreController } from '../controller/StoreController';
 
 export class HandlerMapping {
-	#mappings = {};
+	#routeMap = new Map();
 
 	constructor() {
-		this.#mappings = {
-			"/v1/stores": new RequestHandler({ "GET": new StoreController() }),
-			"/v1/categories": new RequestHandler({ "GET": new CategoryController() })
-		};
+		const controllers = [
+			new StoreController(),
+			new CategoryController()
+		];
+
+		controllers.forEach(controller => {
+			const routes = controller.constructor[ROUTES_KEY] || [];
+			routes.forEach(route => {
+				const key = `${route.method}:${route.path}`;
+				this.#routeMap.set(key, controller[route.handlerName].bind(controller));
+			});
+		});
 	}
 
-	getHandler(pathname) {
-		return this.#mappings[pathname] || null;
+	getHandler(method, pathname) {
+		const key = `${method.toUpperCase()}:${pathname}`;
+		return this.#routeMap.get(key) || null;
 	}
 }
