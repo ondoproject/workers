@@ -2,23 +2,16 @@
 import { BaseController } from './BaseController.js';
 
 export class StoreController extends BaseController {
+	#storeRepository;
+
+	constructor(storeRepository) {
+		super();
+		this.#storeRepository = storeRepository;
+	}
+
 	async process(request, env) {
 		try {
-			const supabase = this.getSupabase(env);
-
-			const { data, error } = await supabase.from('stores')
-				.select(`
-          *,
-          store_categories(
-            categories(name)
-          )
-        `);
-
-			if (error) {
-				console.error(error.message);
-				throw new Error("상점 정보를 불러올 수 없습니다.");
-			}
-
+			const data = await this.#storeRepository.findAll();
 			const cleanData = data.map(item => ({
 				sid: item.sid,
 				name: item.name,
