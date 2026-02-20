@@ -12,6 +12,14 @@
 	],
 	"observability": {
 		"enabled": true
+	},
+	"vars": {
+		"CORS_URIS": [
+			"http://localhost:5173",
+			"https://ondoguide.com",
+			"https://www.ondoguide.com",
+			"/"
+		]
 	}
 	/**
 	 * Smart Placement
