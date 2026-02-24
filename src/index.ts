@@ -16,13 +16,6 @@ export default {
 		this.initialize(env);
 		const origin = request.headers.get("Origin");
 
-		const url = new URL(request.url);
-		if (url.pathname === "/debug/env") {
-			return new Response(JSON.stringify({ CORS_URIS: env.CORS_URIS }), {
-				headers: { "Content-Type": "application/json" },
-			});
-		}
-
 		try {
 			this.checkCors(origin, env);
 			if (request.method === "OPTIONS") {
