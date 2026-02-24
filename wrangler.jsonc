@@ -12,11 +12,6 @@
 	],
 	"observability": {
 		"enabled": true
-	},
-	"dev": {
-		"ip":"localhost",
-		"port": 8171,
-		"local_protocol": "http"
 	}
 	/**
 	 * Smart Placement
